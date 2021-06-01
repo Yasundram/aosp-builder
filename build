@@ -18,7 +18,7 @@ ccache -z
 
 make init
 make sepolicy
-make bootimage
+
 
 make descendant &
 sleep 75m
