@@ -29,4 +29,4 @@ up(){
 	time rclone copy $1 aosp:ccache/ccache-ci2 -P 
 }
 
-ccache -s 
+ccache -s  
