@@ -16,9 +16,8 @@ ccache -o compression=true # Will save times and data to download and upload cca
 ccache -z # Clear old stats, so monitor script will provide real ccache statistics
 
 
-make sepolicy
 make init
-make bootimage
+make sepolicy
  & # dont remove that '&'
 sleep 30m
 kill %1
