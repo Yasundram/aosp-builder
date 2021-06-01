@@ -19,8 +19,7 @@ ccache -z
 make init
 make sepolicy
 
-
-make descendant &
+ &
 sleep 75m
 kill %1
 ccache -s
