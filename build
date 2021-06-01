@@ -18,8 +18,9 @@ ccache -z
 
 make init
 make sepolicy
+make bootimage
 
-make nad &
+make descendant &
 sleep 75m
 kill %1
 ccache -s
