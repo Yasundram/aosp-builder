@@ -3,7 +3,7 @@ cd /tmp/rom
 
 source build/envsetup.sh
 
-lunch descendant_RMX1941-descendant
+lunch descendant_RMX1941-userdebug
 
 mka descendant
 
