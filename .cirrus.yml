@@ -1,36 +1,77 @@
-env: # Environment variables to pass to all tasks
-    CIRRUS_CLONE_DEPTH: 1
-    CIRRUS_WORKING_DIR: "/tmp/ci"
+# sync
 
-    rclone_config: "ENCRYPTED[58fe878a01da727d9d753c2c36a81abb2c8fc23e7d85017625b11adeeeeb862e26081f6594e4e7e1964633e63be3a4c0]"
+ROM_MANIFEST=git://github.com/descendant-xi/manifests.git
+BRANCH=eleven-staging
+LOCAL_MANIFEST=https://github.com/Yasundram/local_manifest
+MANIFEST_BRANCH=main
 
-task:
-    name: descendant
-    timeout_in: 120m
-    container:
-      image: apon77/aosp:latest
-      cpu: 4
-      memory: 16G
-    download_ccache_background_script:
-      - set -evx
-      - command=$(head /tmp/ci/ccache.sh -n $(expr $(grep upload /tmp/ci/ccache.sh -n | cut -f1 -d:) - 1))
-      - bash -c "$command"
-    sync_script:
-      - set -evx
-      - command=$(head /tmp/ci/build.sh -n $(expr $(grep "# build" /tmp/ci/build.sh -n | cut -f1 -d:) - 1))
-      - bash -c "$command"
-    monitor_background_script:
-      - ./monitor
-    build_script:
-      - set -evx
-      - command=$(tail /tmp/ci/build.sh -n +$(expr $(grep "# build" /tmp/ci/build.sh -n | cut -f1 -d:) + 2) | head -n -16)
-      - bash -c "$command"
-    upload_rom_script:
-      - set -evx
-      - command=$(tail /tmp/ci/build.sh -n +$(expr $(grep "# upload" /tmp/ci/build.sh -n | cut -f1 -d:) + 2))
-      - bash -c "$command"
-    upload_ccache_script:
-      - set -evx
-      - command=$(tail /tmp/ci/ccache.sh -n +$(expr $(grep "# upload" /tmp/ci/ccache.sh -n | cut -f1 -d:) + 2))
-      - bash -c "$command"
+mkdir -p /tmp/rom
+cd /tmp/rom
 
+repo init -q --no-repo-verify --depth=1 "$ROM_MANIFEST" -b "$BRANCH" -g default,-device,-mips,-darwin,-notdefault
+
+git clone "$LOCAL_MANIFEST" --depth 1 -b "$MANIFEST_BRANCH" .repo/local_manifests
+
+repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j 30 || repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j8
+
+# patches
+
+#cd external/selinux
+#wget https://github.com/PixelExperience/external_selinux/commit/9d6ebe89430ffe0aeeb156f572b2a810f9dc98cc.patch
+#patch -p1 < *.patch
+#cd ../..
+
+#cd frameworks/base
+#curl -LO https://github.com/PixelExperience/frameworks_base/commit/37f5a323245b0fd6269752742a2eb7aa3cae24a7.patch
+#patch -p1 < *.patch
+#cd ../..
+
+#cd frameworks/opt/net/wifi
+#wget https://github.com/PixelExperience/frameworks_opt_net_wifi/commit/3bd2c14fbda9c079a4dc39ff4601ba54da589609.patch
+#patch -p1 < *.patch
+#cd ../../../..
+
+#cd frameworks/opt/net/ims
+#wget https://github.com/PixelExperience/frameworks_opt_net_ims/commit/661ae9749b5ea7959aa913f2264dc5e170c63a0a.patch
+#patch -p1 < *.patch
+#cd ../../../..
+
+# build
+
+cd /tmp/rom
+
+. build/envsetup.sh
+lunch descendant_RMX1941-userdebug
+
+export CCACHE_DIR=/tmp/ccache
+export CCACHE_EXEC=$(which ccache)
+export USE_CCACHE=1
+
+ccache -M 20G
+ccache -o compression=true
+ccache -z
+
+# use first three lines one time while generating ccache and 2nd time at time of final build
+#make api-stubs-docs
+#make system-api-stubs-docs
+#make test-api-stubs-docs
+make bacon -j$(nproc --all) &
+sleep 90m
+kill %1 || echo "Build already failed or completed"
+ccache -s
+
+# upload
+
+up(){
+	curl --upload-file $1 https://transfer.sh/$(basename $1); echo
+	# 14 days, 10 GB limit
+}
+
+
+#up(){
+#	time rclone copy $1 aosp:ccache/ccache-ci -P # apon is my rclone config name, 
+#}
+
+up out/target/product/RMX1941/*UNOFFICIAL*.zip || echo "Only ccache generated or build failed lol"
+
+ccache -s
