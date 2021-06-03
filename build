@@ -17,7 +17,7 @@ ccache -z # Clear old stats, so monitor script will provide real ccache statisti
 
 
 make init
-make sepolicy
+make bootimage
  & # dont remove that '&'
 sleep 30m
 kill %1
