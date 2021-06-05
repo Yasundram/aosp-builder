@@ -30,7 +30,7 @@ up(){
 	curl -sL https://git.io/file-transfer | sh
 	./transfer wet $1; echo 
         # 14 days, 10 GB limit 
-}
+} 
 
 # Build command! j10 for 10 cpu, j8 for 8 cpu, otherwise memeroy will end up even its 24G
 # Upload rom zip file if succeed to build! Send notification to tg! And send shell to tg if build fails!
