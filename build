@@ -3,10 +3,10 @@ cd /tmp/rom
 
 
 # Set up environment
-$ . build/envsetup.sh
+ . build/envsetup.sh
 
 # Choose a target
-$ lunch rr_$RMX1941-userdebug
+ lunch rr_RMX1941-userdebug
 
 
 
