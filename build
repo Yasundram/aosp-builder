@@ -1,9 +1,16 @@
 #!/bin/bash
 cd /tmp/rom
 
-source build/envsetup.sh
 
-lunch descendant_RMX1941-userdebug
+# Set up environment
+$ . build/envsetup.sh
+
+# Choose a target
+$ lunch rr_$RMX1941-userdebug
+
+
+
+
 
 
 
