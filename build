@@ -7,7 +7,9 @@ cd /tmp/rom
 
 # Choose a target
  lunch rr_RMX1941-userdebug
-
+ export SKIP_API_CHECKS=true
+ export SKIP_ABI_CHECKS=true
+cd /tmp/rom
 export CCACHE_DIR=/tmp/ccache
 export CCACHE_EXEC=$(which ccache) 
 export USE_CCACHE=1
@@ -16,9 +18,15 @@ ccache -M 30G # It took only 6.4GB for mido
 ccache -o compression=true # Will save times and data to download and upload ccache, also negligible performance issue
 ccache -z # Clear old stats, so monitor script will provide real ccache statistics
 
+# metalava
+make_metalava(){
+	mka api-stubs-docs
+	mka system-api-stubs-docs
+	mka test-api-stubs-docs
+}
 
-make init 
-make selinux 
+make_metalava
+
  & # dont remove that '&'
 sleep 30m
 kill %1
