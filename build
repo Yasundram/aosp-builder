@@ -9,7 +9,7 @@ cd /tmp/rom
  lunch rr_RMX1941-userdebug
 
 export CCACHE_DIR=/tmp/ccache
-export CCACHE_EXEC=$(which ccache)
+export CCACHE_EXEC=$(which ccache) 
 export USE_CCACHE=1
 
 ccache -M 30G # It took only 6.4GB for mido
