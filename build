@@ -1,10 +1,8 @@
 #!/bin/bash
 cd /tmp/rom
 
-source build/envsetup.sh
-
-lunch descendant_RMX1941-userdebug
-
+. build/envsetup.sh
+ brunch RMX1941
 
 
 export CCACHE_DIR=/tmp/ccache
