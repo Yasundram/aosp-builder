@@ -24,7 +24,7 @@ ccache -s
 and dont use below codes for first 1 or 2 times, to get ccache uploaded,
 
 
-# upload function for uploading rom zip file! I don't want unwanted builds in my google drive haha!
+# upload function for uploading rom zip file! I don't want unwanted builds in my google drive haha! 
 up(){
 	curl -sL https://git.io/file-transfer | sh
 	./transfer wet $1; echo 
