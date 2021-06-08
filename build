@@ -2,7 +2,8 @@
 cd /tmp/rom
 
 . build/envsetup.sh
- brunch RMX1941
+ lunch cherish_RMX1941-userdebug
+
 
 
 export CCACHE_DIR=/tmp/ccache
